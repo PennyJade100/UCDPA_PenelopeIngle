@@ -245,7 +245,7 @@ print(Choc_Cocoa.head(3))
 plt.rcParams.update({'font.family':'fantasy'})
 
 Top_tastes=Choc_taste.nlargest(5,'count_of_taste')
-explode = (0.1, 0, 0, 0, 0)  # only "explode" the 1st slice (i.e. 'Hogs')
+explode = (0.1, 0, 0, 0, 0)  # only "explode" the 1st slice
 
 labels = Top_tastes['taste']
 sizes = Top_tastes['count_of_taste']

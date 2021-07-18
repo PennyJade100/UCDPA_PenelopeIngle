@@ -1,4 +1,4 @@
-# Step 1 - Import Data
+# STEP 1 - Import Data
 # Import required Libraries for data cleaning in Python
 import pandas as pd
 import numpy as np
@@ -26,7 +26,7 @@ warnings.filterwarnings("ignore")
 # and a large set of data
 Choc_data = pd.read_csv("chocolate.csv", encoding = "ISO-8859-1")
 
-# Step 2: Data Cleaning
+# STEP 2: Data Cleaning
 #What type of data are we working with?
 print(type(Choc_data))
 
@@ -89,7 +89,7 @@ Choc_data2.drop_duplicates()
 print(Choc_data2.shape)
 # Still no duplicates
 
-# Step 3: Data Understanding/Manipulation
+# STEP 3: Data Understanding/Manipulation
 # Access only 1no. column
 print(Choc_data2["Rating"].head())
 
@@ -148,19 +148,34 @@ print(Choc_Ratings.head(1))
 
 print(type(Choc_Ratings))
 
-print(Choc_Ratings['BeanOrigin'].value_counts(ascending=True))
+# What country of bean origin's corelate to the ratings of 4?
+# Print out country names and how many times each is mentioned.
+print(Choc_Ratings['BeanOrigin'].value_counts(ascending=False))
 
-# Top rated cocoa percentages?
-Choc_Cocoa=Choc_Ratings['CocoaPercent'].value_counts(ascending=True)
+Choc_Ratings2=Choc_Ratings['BeanOrigin'].value_counts(ascending=False)
+print(Choc_Ratings2)
+
+Choc_Cocoa=Choc_Ratings['CocoaPercent'].value_counts(ascending=False)
 print(Choc_Cocoa)
+# 70, 75 & 72 percent are the top 3 no. rated cocoa percentages
 
-# Data visualisation/manipulation
+# Import the taste dataset csv. file from Local Desktop
+Choc_taste= pd.read_csv("chocolate_taste_dataset.csv", encoding = "ISO-8859-1")
+
+# Check what the dataset looks like
+Choc_taste.head()
+
+# STEP 4: Data visualisation/manipulation
 # What is the Rating distribution of the chocolates
 import matplotlib.pyplot as plt
 import numpy as np
 
-# Fixing random state for reproducibility
-np.random.seed(19680801)
+# What is the Rating distribution of the chocolates
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Change font stype
+plt.rcParams.update({'font.family':'fantasy'})
 
 # unit area ellipse
 rx, ry = 3., 1.
@@ -172,38 +187,74 @@ X=Choc_data3["Rating"]
 Y=Choc_data3["ID"]
 
 fig, ax = plt.subplots()
-ax.scatter(X, Y, marker=verts)
-
-ax.set_xlabel('Chocolate Ratings')
-ax.set_ylabel('Chocolate ID')
-ax.set_title('RATING DISTRIBUTION')
+ax.scatter(X, Y, marker=verts, c='green')
+ax.set_xlabel('Chocolate Ratings', labelpad=10,fontsize='15', horizontalalignment='center')
+ax.set_ylabel('Chocolate Samples', labelpad=10, fontsize='15', horizontalalignment='center')
+ax.set_title('Rating Distribution of Chocolates', pad =20, fontsize='18')
 
 plt.show()
 
-# What are the top 5 countries of cocoa bean production within dataset?
-Top_OriginCountries = Choc_data3['BeanOrigin'].value_counts().sort_values(ascending=False).head(5)
+# What are the top 5 countries of cocoa bean production with Premium ratings?
+Top_OriginCountries = Choc_Ratings['BeanOrigin'].value_counts().sort_values(ascending=False).head(5)
 Top_OriginCountries = pd.DataFrame(Top_OriginCountries)
 Top_OriginCountries = Top_OriginCountries.reset_index() # dataframe with top 5 companies
 
-# Plotting
+# Change font stype
+plt.rcParams.update({'font.family':'fantasy'})
+
+# Plotting (change colour of bar chart to blue hues from seaborn)
 sns.set()
 plt.figure(figsize=(10,4))
-sns.barplot(x='index', y='BeanOrigin', data=Top_OriginCountries)
-plt.xlabel("\nCocoa Bean Origin Country")
-plt.ylabel("No. of Chocolates Rated")
-plt.title("Top 5 Countries of Cocoa Bean Origin\n")
+sns.barplot(x='index', y='BeanOrigin', data=Top_OriginCountries, palette="Blues_d")
+plt.xlabel("\nCocoa Bean Origin Country", fontsize='15', horizontalalignment='center')
+plt.ylabel("No. of Chocolates Rated 4", fontsize='15', horizontalalignment='center')
+plt.title("Top 5 Countries of Cocoa Bean Origin (Premium Rating)\n", fontweight='bold', fontsize='18', horizontalalignment='center')
 plt.show()
 
-# What are the top 5 countries rated in regards to the average rating of the chocolates
-OriginCountry_Rating = Choc_data3.groupby('BeanOrigin').aggregate({'Rating':'mean'})
-OriginCountry_Rating = OriginCountry_Rating.sort_values('Rating', ascending=False).head(5)
-OriginCountry_Rating = OriginCountry_Rating.reset_index() #dataframw with top counties of origin of cocoa bean
+# What does the distribution of the cocoa content look like among the chococlates rated 4
 
-# Plotting
-sns.set()
-plt.figure(figsize=(20, 6))
-sns.barplot(x='BeanOrigin', y='Rating', data=OriginCountry_Rating)
-plt.xlabel("\nChocolate Company")
-plt.ylabel("Average Rating")
-plt.title("Top 5 Companies in terms of Average Ratings \n")
+Percent_mean= Choc_Ratings["CocoaPercent"].mean()
+Std_Dev=Choc_Ratings['CocoaPercent'].std()
+x = Percent_mean + Std_Dev * np.random.randn(437)
+
+num_bins = 50
+
+fig, ax = plt.subplots()
+
+# the histogram of the data
+n, bins, patches = ax.hist(x, num_bins, density=True)
+
+# add a 'best fit' line
+y = ((1 / (np.sqrt(2 * np.pi) * Std_Dev)) *
+     np.exp(-0.5 * (1 / Std_Dev * (bins - Percent_mean))**2))
+ax.plot(bins, y, '--')
+ax.set_xlabel('% Cocoa', fontsize='15', labelpad=10)
+ax.set_ylabel('Standard Deviation', fontsize='15', labelpad=10)
+ax.set_title(r'Distribution of Cocoa Percent', fontsize='17', pad=20)
+
+# Tweak spacing to prevent clipping of ylabel
+fig.tight_layout()
 plt.show()
+
+Choc_Cocoa=Choc_Ratings['CocoaPercent'].value_counts(ascending=False)
+print(Choc_Cocoa.head(3))
+
+# Pie chart, where the slices will be ordered and plotted counter-clockwise:
+# what are the 5 most popular flavours tested by taste tests?
+
+plt.rcParams.update({'font.family':'fantasy'})
+
+Top_tastes=Choc_taste.nlargest(5,'count_of_taste')
+explode = (0.1, 0, 0, 0, 0)  # only "explode" the 1st slice (i.e. 'Hogs')
+
+labels = Top_tastes['taste']
+sizes = Top_tastes['count_of_taste']
+
+fig1, ax1 = plt.subplots()
+ax1.pie(sizes, explode=explode, labels=labels, autopct='%1.1f%%',
+        shadow=True, startangle=90)
+ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+ax1.set_title("Top 5 Most Popular Flavours", fontsize="17", pad=20)
+plt.show()
+
+

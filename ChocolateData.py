@@ -4,6 +4,8 @@ import pandas as pd
 import numpy as np
 import os
 import matplotlib.pyplot as plt
+import seaborn as sns
+from statistics import mean
 
 
 # Find working directory for project
@@ -152,3 +154,56 @@ print(Choc_Ratings['BeanOrigin'].value_counts(ascending=True))
 Choc_Cocoa=Choc_Ratings['CocoaPercent'].value_counts(ascending=True)
 print(Choc_Cocoa)
 
+# Data visualisation/manipulation
+# What is the Rating distribution of the chocolates
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Fixing random state for reproducibility
+np.random.seed(19680801)
+
+# unit area ellipse
+rx, ry = 3., 1.
+area = rx * ry * np.pi
+theta = np.arange(0, 2 * np.pi + 0.01, 0.1)
+verts = np.column_stack([rx / area * np.cos(theta), ry / area * np.sin(theta)])
+
+X=Choc_data3["Rating"]
+Y=Choc_data3["ID"]
+
+fig, ax = plt.subplots()
+ax.scatter(X, Y, marker=verts)
+
+ax.set_xlabel('Chocolate Ratings')
+ax.set_ylabel('Chocolate ID')
+ax.set_title('RATING DISTRIBUTION')
+
+plt.show()
+
+# What are the top 5 countries of cocoa bean production within dataset?
+Top_OriginCountries = Choc_data3['BeanOrigin'].value_counts().sort_values(ascending=False).head(5)
+Top_OriginCountries = pd.DataFrame(Top_OriginCountries)
+Top_OriginCountries = Top_OriginCountries.reset_index() # dataframe with top 5 companies
+
+# Plotting
+sns.set()
+plt.figure(figsize=(10,4))
+sns.barplot(x='index', y='BeanOrigin', data=Top_OriginCountries)
+plt.xlabel("\nCocoa Bean Origin Country")
+plt.ylabel("No. of Chocolates Rated")
+plt.title("Top 5 Countries of Cocoa Bean Origin\n")
+plt.show()
+
+# What are the top 5 countries rated in regards to the average rating of the chocolates
+OriginCountry_Rating = Choc_data3.groupby('BeanOrigin').aggregate({'Rating':'mean'})
+OriginCountry_Rating = OriginCountry_Rating.sort_values('Rating', ascending=False).head(5)
+OriginCountry_Rating = OriginCountry_Rating.reset_index() #dataframw with top counties of origin of cocoa bean
+
+# Plotting
+sns.set()
+plt.figure(figsize=(20, 6))
+sns.barplot(x='BeanOrigin', y='Rating', data=OriginCountry_Rating)
+plt.xlabel("\nChocolate Company")
+plt.ylabel("Average Rating")
+plt.title("Top 5 Companies in terms of Average Ratings \n")
+plt.show()

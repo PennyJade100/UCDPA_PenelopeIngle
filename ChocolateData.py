@@ -211,8 +211,25 @@ plt.ylabel("No. of Chocolates Rated 4", fontsize='15', horizontalalignment='cent
 plt.title("Top 5 Countries of Cocoa Bean Origin (Premium Rating)\n", fontweight='bold', fontsize='18', horizontalalignment='center')
 plt.show()
 
-# What does the distribution of the cocoa content look like among the chococlates rated 4
+# What are the bottom 5 countries of cocoa bean production with Premium ratings?
+Top_OriginCountries = Choc_Ratings['BeanOrigin'].value_counts().sort_values(ascending=True).head(5)
+Top_OriginCountries = pd.DataFrame(Top_OriginCountries)
+Top_OriginCountries = Top_OriginCountries.reset_index() # dataframe with top 5 companies
 
+# Change font stype
+plt.rcParams.update({'font.family':'fantasy'})
+
+# Plotting (change colour of bar chart to blue hues from seaborn)
+sns.set()
+plt.figure(figsize=(10,4))
+sns.barplot(x='index', y='BeanOrigin', data=Top_OriginCountries, palette="Blues_d")
+plt.xlabel("\nCocoa Bean Origin Country", fontsize='15', horizontalalignment='center')
+plt.ylabel("No. of Chocolates Rated 4", fontsize='15', horizontalalignment='center')
+plt.title("Bottom 5 Countries of Cocoa Bean Origin (Premium Rating)\n", fontweight='bold', fontsize='18', horizontalalignment='center')
+plt.show()
+
+
+# What does the distribution of the cocoa content look like among the chocolates rated 4
 Percent_mean= Choc_Ratings["CocoaPercent"].mean()
 Std_Dev=Choc_Ratings['CocoaPercent'].std()
 x = Percent_mean + Std_Dev * np.random.randn(437)
@@ -258,3 +275,4 @@ ax1.set_title("Top 5 Most Popular Flavours", fontsize="17", pad=20)
 plt.show()
 
 
+#### THANK YOU ######
